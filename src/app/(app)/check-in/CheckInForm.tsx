@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import React, { useState } from 'react'
 import { submitDailyCheckIn } from './actions'
 import { Info, Image as ImageIcon, Video, UploadCloud } from 'lucide-react'
 
@@ -8,10 +8,11 @@ export function CheckInForm({ initialData }: { initialData?: any }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
+  const [isPending, startTransition] = React.useTransition()
   
   const [physCompleted, setPhysCompleted] = useState(initialData?.physical_activity_completed || false)
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
     setError(null)
@@ -19,18 +20,20 @@ export function CheckInForm({ initialData }: { initialData?: any }) {
     
     const formData = new FormData(e.currentTarget)
     
-    try {
-      const result = await submitDailyCheckIn(formData)
-      if (result?.error) {
-        setError(result.error)
-      } else if (result?.success) {
-        setSuccess(result.success)
+    startTransition(async () => {
+      try {
+        const result = await submitDailyCheckIn(formData)
+        if (result?.error) {
+          setError(result.error)
+        } else if (result?.success) {
+          setSuccess(result.success)
+        }
+      } catch (err: any) {
+        setError(err.message || 'An unexpected error occurred')
+      } finally {
+        setLoading(false)
       }
-    } catch (err: any) {
-      setError(err.message || 'An unexpected error occurred')
-    } finally {
-      setLoading(false)
-    }
+    })
   }
 
   return (
