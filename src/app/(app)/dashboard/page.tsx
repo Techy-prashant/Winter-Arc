@@ -23,14 +23,18 @@ export default async function DashboardPage() {
     .eq('user_id', user.id)
     .single()
 
-  // Fetch Today's Check-in
-  const today = new Date().toISOString().split('T')[0]
-  const { data: checkIn } = await supabase
+  // Fetch Latest Check-in (resolves UTC vs Local timezone bugs)
+  const utcToday = new Date().toISOString().split('T')[0]
+  
+  const { data: checkInList } = await supabase
     .from('daily_check_ins')
     .select('*')
     .eq('user_id', user.id)
-    .eq('date', today)
-    .single()
+    .order('date', { ascending: false })
+    .limit(1)
+
+  const checkIn = checkInList?.[0]
+  const displayDate = checkIn?.date || utcToday
 
   // Greeting Logic
   const hour = new Date().getHours()
@@ -93,7 +97,7 @@ export default async function DashboardPage() {
           <div className="space-y-6">
             <div className="flex items-center justify-between border-b border-white/20 pb-2">
               <h2 className="text-[15px] tracking-[0.2em] uppercase text-white/80">TODAY</h2>
-              <span className="text-[15px] tracking-[0.2em] uppercase text-white/60">{today}</span>
+              <span className="text-[15px] tracking-[0.2em] uppercase text-white/60">{displayDate}</span>
             </div>
 
             <div className="space-y-8">
