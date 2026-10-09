@@ -1,41 +1,43 @@
 import React from 'react'
-import { ExternalLink } from 'lucide-react'
+import { ExternalLink, ClipboardCheck, AlertCircle } from 'lucide-react'
 
 export function GoogleFormEmbed() {
-  // Using the embedded URL directly for better iframe support
-  const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdLMSAMlaSBQmoC0uQZBzbH9pe-WlN25vHwRsfVAJMSuCWo3w/viewform?embedded=true"
+  const formUrl = "https://forms.gle/LoRn336HyYut8FbH9"
 
   return (
-    <div className="p-6 rounded-xl bg-white/5 border border-white/10 space-y-6">
-      <div className="flex flex-col space-y-2 border-b border-white/20 pb-4">
-        <h2 className="text-[15px] tracking-[0.2em] uppercase text-white/80 font-medium">
-          DAILY CHECK-IN
-        </h2>
-        <p className="text-xs text-white/50">
-          Submit your daily Winter Arc progress to update your record.
-        </p>
-      </div>
+    <div className="p-8 rounded-xl bg-white/5 border border-white/10 relative overflow-hidden group">
+      {/* Decorative gradient background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 via-transparent to-transparent opacity-50 pointer-events-none" />
       
-      <div className="w-full overflow-hidden rounded-lg border border-white/10 bg-white/5">
-        <iframe 
-          src={formUrl}
-          className="w-full border-0"
-          style={{ height: '3200px' }}
-          title="Daily Check-In Form"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation"
-        >
-          Loading…
-        </iframe>
-      </div>
-      
-      <div className="pt-2 flex justify-end">
+      <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="space-y-4 flex-1">
+          <div className="flex items-center gap-3">
+            <div className="p-2.5 rounded-lg bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+              <ClipboardCheck className="w-5 h-5" />
+            </div>
+            <h2 className="text-lg tracking-widest uppercase text-white font-medium">
+              Daily Check-In
+            </h2>
+          </div>
+          
+          <p className="text-sm text-white/60 leading-relaxed max-w-xl">
+            Submit your daily Winter Arc progress honestly. Record your study hours, workouts, and upload proof. Consistent check-ins build unbreakable habits.
+          </p>
+
+          <div className="flex items-center gap-2 text-xs text-amber-500/80 bg-amber-500/10 w-fit px-3 py-1.5 rounded-md border border-amber-500/20">
+            <AlertCircle className="w-3.5 h-3.5" />
+            <span>Requires Google Sign-in for image uploads.</span>
+          </div>
+        </div>
+
         <a 
-          href={formUrl} 
-          target="_blank" 
+          href={formUrl}
+          target="_blank"
           rel="noopener noreferrer"
-          className="text-[10px] tracking-widest uppercase text-emerald-500 hover:text-emerald-400 transition-colors flex items-center gap-1"
+          className="w-full md:w-auto flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-500 text-white px-8 py-4 rounded-lg font-medium tracking-wide transition-all duration-300 hover:scale-105 hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] border border-emerald-400/20"
         >
-          Open form in a new tab <ExternalLink className="w-3 h-3" />
+          <span>Open Form</span>
+          <ExternalLink className="w-4 h-4" />
         </a>
       </div>
     </div>
