@@ -76,6 +76,7 @@ export async function validateImport(formData: FormData) {
 
     if (seenInCsv.has(normalizedEmail)) {
       results.duplicateCsv++
+      results.invalid++
       results.invalidRows.push({ row, reason: 'Duplicate in CSV' })
       continue
     }

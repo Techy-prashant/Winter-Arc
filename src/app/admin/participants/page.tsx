@@ -56,10 +56,10 @@ export default async function ParticipantsPage(props: { searchParams: Promise<{ 
               defaultValue={statusFilter}
               className="bg-white/5 border border-white/10 rounded-md px-4 py-2 text-sm text-white focus:outline-none focus:ring-1 focus:ring-primary appearance-none"
             >
-              <option value="">All Statuses</option>
-              <option value="active">Active</option>
-              <option value="at-risk">At-Risk</option>
-              <option value="suspended">Suspended</option>
+              <option value="" className="bg-black text-white">All Statuses</option>
+              <option value="active" className="bg-black text-white">Active</option>
+              <option value="at-risk" className="bg-black text-white">At-Risk</option>
+              <option value="suspended" className="bg-black text-white">Suspended</option>
             </select>
             <button type="submit" className="bg-primary text-black font-semibold px-4 py-2 rounded-md text-sm hover:bg-primary/90 transition-colors">
               Filter
