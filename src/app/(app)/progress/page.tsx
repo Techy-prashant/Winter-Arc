@@ -70,7 +70,7 @@ export default async function ChallengesPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-white/50 leading-relaxed font-light max-w-2xl">
+                  <p className="text-sm text-white/50 leading-relaxed font-light max-w-2xl whitespace-pre-wrap">
                     {challenge.description}
                   </p>
                 </div>
