@@ -2,9 +2,8 @@ import React from 'react'
 import { ExternalLink } from 'lucide-react'
 
 export function GoogleFormEmbed() {
-  // Using the provided short URL. Note: for best iframe embedding, 
-  // the long URL with ?embedded=true is recommended.
-  const formUrl = "https://forms.gle/LoRn336HyYut8FbH9"
+  // Using the embedded URL directly for better iframe support
+  const formUrl = "https://docs.google.com/forms/d/e/1FAIpQLSdLMSAMlaSBQmoC0uQZBzbH9pe-WlN25vHwRsfVAJMSuCWo3w/viewform?embedded=true"
 
   return (
     <div className="p-6 rounded-xl bg-white/5 border border-white/10 space-y-6">
@@ -17,12 +16,13 @@ export function GoogleFormEmbed() {
         </p>
       </div>
       
-      <div className="relative w-full overflow-hidden rounded-lg border border-white/10 bg-white/5" style={{ minHeight: '600px' }}>
+      <div className="w-full overflow-hidden rounded-lg border border-white/10 bg-white/5">
         <iframe 
           src={formUrl}
-          className="w-full h-full border-0 absolute inset-0"
+          className="w-full border-0"
+          style={{ height: '3200px' }}
           title="Daily Check-In Form"
-          sandbox="allow-scripts allow-same-origin allow-forms allow-popups"
+          sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox allow-top-navigation"
         >
           Loading…
         </iframe>
