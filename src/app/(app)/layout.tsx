@@ -3,6 +3,7 @@ import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
 import { LogOut } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar'
+import { DesktopNav, MobileNav } from './Navigation'
 
 export default async function AppLayout({
   children,
@@ -26,14 +27,7 @@ export default async function AppLayout({
           <div className="text-xl font-medium tracking-tight text-white">WINTER ARC</div>
         </div>
         
-        <nav className="flex-1 px-4 py-8 space-y-1 overflow-y-auto">
-          <NavItem href="/dashboard" label="HOME" />
-          <NavItem href="/check-in" label="CHECK-IN" />
-          <NavItem href="/progress" label="MISSIONS" />
-          <NavItem href="/feed" label="THREADS" />
-          <NavItem href="/leaderboard" label="LEADERBOARD" />
-          <NavItem href="/profile" label="PROFILE" />
-        </nav>
+        <DesktopNav />
         
         <div className="p-6 border-t border-white/5 space-y-4">
           <div className="flex items-center space-x-3">
@@ -64,25 +58,7 @@ export default async function AppLayout({
         </div>
       </main>
 
-      {/* Mobile Bottom Nav */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 border-t border-white/5 bg-[#05070a]/90 backdrop-blur-xl z-50 flex justify-around p-4 text-[10px] tracking-wider uppercase font-medium">
-        <Link href="/dashboard" className="text-white/50 hover:text-white">Home</Link>
-        <Link href="/progress" className="text-white/50 hover:text-white">Missions</Link>
-        <Link href="/check-in" className="text-white/50 hover:text-white">Check-in</Link>
-        <Link href="/feed" className="text-white/50 hover:text-white">Threads</Link>
-        <Link href="/profile" className="text-white/50 hover:text-white">Profile</Link>
-      </div>
+      <MobileNav />
     </div>
-  )
-}
-
-function NavItem({ href, label }: { href: string, label: string }) {
-  return (
-    <Link 
-      href={href} 
-      className="block px-4 py-3 text-xs tracking-[0.2em] font-medium text-white/50 hover:text-white hover:bg-white/5 transition-colors"
-    >
-      {label}
-    </Link>
   )
 }
