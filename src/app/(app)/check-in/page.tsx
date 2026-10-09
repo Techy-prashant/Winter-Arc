@@ -1,7 +1,9 @@
 import { createClient } from '@/utils/supabase/server'
 import { redirect } from 'next/navigation'
-import { CheckInForm } from './CheckInForm'
 import { TargetsBoard } from '../dashboard/TargetsBoard'
+import { StudyTimer } from './StudyTimer'
+import { ReferenceImages } from './ReferenceImages'
+import { GoogleFormEmbed } from './GoogleFormEmbed'
 
 export default async function CheckInPage() {
   const supabase = await createClient()
@@ -12,12 +14,6 @@ export default async function CheckInPage() {
   }
 
   const today = new Date().toISOString().split('T')[0]
-  const { data: existingCheckIn } = await supabase
-    .from('daily_check_ins')
-    .select('*')
-    .eq('user_id', user.id)
-    .eq('date', today)
-    .single()
 
   const { data: targets } = await supabase
     .from('daily_targets')
@@ -35,18 +31,23 @@ export default async function CheckInPage() {
         <h1 className="text-4xl font-medium tracking-tight text-white uppercase">
           Daily Goal
         </h1>
-        {existingCheckIn && (
-          <div className="mt-6 text-[10px] tracking-[0.2em] uppercase text-emerald-500/80">
-            Activity logged. Submitting again will overwrite.
-          </div>
-        )}
       </header>
 
-      <TargetsBoard initialTargets={targets || []} />
+      {/* TASK MANAGEMENT */}
+      <section>
+        <TargetsBoard initialTargets={targets || []} />
+      </section>
 
-      <div className="pt-8 border-t border-white/5">
-        <CheckInForm initialData={existingCheckIn} />
-      </div>
+      {/* STUDY TIMER */}
+      <section>
+        <StudyTimer />
+      </section>
+
+      {/* DAILY CHECK-IN (GOOGLE FORM) */}
+      <section className="space-y-8">
+        <ReferenceImages />
+        <GoogleFormEmbed />
+      </section>
     </div>
   )
 }
