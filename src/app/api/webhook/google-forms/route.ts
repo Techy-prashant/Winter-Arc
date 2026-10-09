@@ -98,8 +98,7 @@ export async function POST(req: Request) {
         longest_streak: stats.longestStreak,
         total_study_minutes: stats.totalStudyMinutes,
         total_workouts: stats.totalWorkouts,
-        leaderboard_score: stats.leaderboardScore,
-        last_updated: new Date().toISOString()
+        leaderboard_score: stats.leaderboardScore
       }, { onConflict: 'user_id' })
 
       if (stats.isAtRisk) {

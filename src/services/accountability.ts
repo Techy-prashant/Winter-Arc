@@ -59,7 +59,8 @@ export function calculateAccountability(checkIns: CheckIn[], currentDateStr: str
           totalWorkouts += 1;
         }
 
-        const isCompleted = checkIn.study_duration_minutes >= 180;
+        // Any submission counts as a streak completion per user request
+        const isCompleted = true;
         if (isCompleted) {
           currentStreak += 1;
           lastCompletedDate = new Date(iteratorDate);
