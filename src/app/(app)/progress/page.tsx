@@ -70,9 +70,13 @@ export default async function ChallengesPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-white/50 leading-relaxed font-light max-w-2xl whitespace-pre-wrap">
-                    {challenge.description}
-                  </p>
+                  <div className="text-sm text-white/50 leading-relaxed font-light max-w-2xl">
+                    {challenge.description.split('\n').map((line, i) => (
+                      <div key={i} className={line.trim() === '' ? 'h-4' : ''}>
+                        {line}
+                      </div>
+                    ))}
+                  </div>
                 </div>
                 <div className="text-[10px] tracking-[0.2em] uppercase text-white/40 shrink-0 md:text-right bg-black/40 px-3 py-1.5 rounded-full border border-white/5">
                   {isActive ? `${daysLeft} DAYS LEFT` : isUpcoming ? `STARTS ${challenge.start_date}` : 'CLOSED'}
