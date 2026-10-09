@@ -4,6 +4,8 @@ import React, { useState } from 'react'
 import { submitDailyCheckIn } from './actions'
 import { Info, Image as ImageIcon, Video, UploadCloud } from 'lucide-react'
 
+import { createClient } from '@/utils/supabase/client'
+
 export function CheckInForm({ initialData }: { initialData?: any }) {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -12,7 +14,7 @@ export function CheckInForm({ initialData }: { initialData?: any }) {
   
   const [physCompleted, setPhysCompleted] = useState(initialData?.physical_activity_completed || false)
 
-  function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault()
     setLoading(true)
     setError(null)
@@ -20,20 +22,51 @@ export function CheckInForm({ initialData }: { initialData?: any }) {
     
     const formData = new FormData(e.currentTarget)
     
-    startTransition(async () => {
-      try {
-        const result = await submitDailyCheckIn(formData)
-        if (result?.error) {
-          setError(result.error)
-        } else if (result?.success) {
-          setSuccess(result.success)
-        }
-      } catch (err: any) {
-        setError(err.message || 'An unexpected error occurred')
-      } finally {
-        setLoading(false)
+    try {
+      // 1. Upload files directly from browser to Supabase to bypass Vercel limits
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error("Not authenticated")
+
+      const today = new Date().toISOString().split('T')[0]
+      const studyFile = formData.get('study_proof') as File | null
+      const physFile = formData.get('physical_proof') as File | null
+
+      if (studyFile && studyFile.size > 0) {
+        const ext = studyFile.name.split('.').pop()
+        const filename = `${user.id}/${today}-study.${ext}`
+        const { error } = await supabase.storage.from('proofs').upload(filename, studyFile, { upsert: true })
+        if (error) throw new Error('Study proof upload failed: ' + error.message)
+        formData.append('study_proof_url', `/api/media?bucket=proofs&path=${encodeURIComponent(filename)}`)
       }
-    })
+
+      if (physFile && physFile.size > 0) {
+        const ext = physFile.name.split('.').pop()
+        const filename = `${user.id}/${today}-physical.${ext}`
+        const { error } = await supabase.storage.from('proofs').upload(filename, physFile, { upsert: true })
+        if (error) throw new Error('Physical proof upload failed: ' + error.message)
+        formData.append('physical_proof_url', `/api/media?bucket=proofs&path=${encodeURIComponent(filename)}`)
+      }
+
+      // 2. Send the fast URL payload to the Server Action
+      startTransition(async () => {
+        try {
+          const result = await submitDailyCheckIn(formData)
+          if (result?.error) {
+            setError(result.error)
+          } else if (result?.success) {
+            setSuccess(result.success)
+          }
+        } catch (err: any) {
+          setError(err.message || 'An unexpected error occurred')
+        } finally {
+          setLoading(false)
+        }
+      })
+    } catch (err: any) {
+      setError(err.message || 'File upload failed')
+      setLoading(false)
+    }
   }
 
   return (

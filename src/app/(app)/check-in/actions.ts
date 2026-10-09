@@ -22,30 +22,11 @@ export async function submitDailyCheckIn(formData: FormData) {
   const physicalActivityType = formData.get('physical_activity_type') as string
   const physicalActivityDuration = parseInt(formData.get('physical_activity_duration') as string || '0', 10)
 
-  // Handle files
-  const studyProofFile = formData.get('study_proof') as File | null
-  const physicalProofFile = formData.get('physical_proof') as File | null
-
-  let studyProofUrl = ''
-  let physicalProofUrl = ''
+  // Handle files uploaded from client
+  let studyProofUrl = formData.get('study_proof_url') as string || ''
+  let physicalProofUrl = formData.get('physical_proof_url') as string || ''
 
   const today = new Date().toISOString().split('T')[0]
-
-  if (studyProofFile && studyProofFile.size > 0) {
-    const ext = studyProofFile.name.split('.').pop()
-    const filename = `${user.id}/${today}-study.${ext}`
-    const { error: uploadError } = await supabase.storage.from('proofs').upload(filename, studyProofFile, { upsert: true })
-    if (uploadError) return { error: 'Failed to upload study proof: ' + uploadError.message }
-    studyProofUrl = `/api/media?bucket=proofs&path=${encodeURIComponent(filename)}`
-  }
-
-  if (physicalActivityCompleted && physicalProofFile && physicalProofFile.size > 0) {
-    const ext = physicalProofFile.name.split('.').pop()
-    const filename = `${user.id}/${today}-physical.${ext}`
-    const { error: uploadError } = await supabase.storage.from('proofs').upload(filename, physicalProofFile, { upsert: true })
-    if (uploadError) return { error: 'Failed to upload physical activity proof: ' + uploadError.message }
-    physicalProofUrl = `/api/media?bucket=proofs&path=${encodeURIComponent(filename)}`
-  }
 
   // Check if check-in exists to preserve old URLs if not updated
   const { data: existingCheckIn } = await supabase
