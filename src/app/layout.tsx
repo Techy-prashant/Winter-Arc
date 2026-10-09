@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Namdapha Winter Arc",
+  title: "Winter Arc | Namdapha House",
   description: "Private accountability platform for the Namdapha Winter Arc challenge.",
   manifest: "/manifest.json",
 };
