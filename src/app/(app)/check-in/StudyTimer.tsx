@@ -7,7 +7,8 @@ export function StudyTimer() {
   const [elapsed, setElapsed] = useState(0)
   const [isRunning, setIsRunning] = useState(false)
   
-  const timerRef = useRef<NodeJS.Timeout | null>(null)
+  const accumulatedRef = useRef(0)
+  const startTimeRef = useRef(0)
 
   useEffect(() => {
     // Restore from localStorage
@@ -18,10 +19,15 @@ export function StudyTimer() {
         if (parsed.isRunning) {
           const now = Date.now()
           const additionalElapsed = Math.floor((now - parsed.lastTick) / 1000)
-          setElapsed(parsed.elapsed + additionalElapsed)
+          const totalElapsed = parsed.elapsed + additionalElapsed
+          
+          setElapsed(totalElapsed)
+          accumulatedRef.current = parsed.elapsed
+          startTimeRef.current = parsed.lastTick
           setIsRunning(true)
         } else {
           setElapsed(parsed.elapsed)
+          accumulatedRef.current = parsed.elapsed
           setIsRunning(false)
         }
       } catch (e) {
@@ -31,25 +37,15 @@ export function StudyTimer() {
   }, [])
 
   useEffect(() => {
+    let interval: NodeJS.Timeout
     if (isRunning) {
-      timerRef.current = setInterval(() => {
-        setElapsed(prev => {
-          const next = prev + 1
-          localStorage.setItem('winterArcTimerState', JSON.stringify({
-            isRunning: true,
-            elapsed: next,
-            lastTick: Date.now()
-          }))
-          return next
-        })
+      interval = setInterval(() => {
+        const now = Date.now()
+        const additionalElapsed = Math.floor((now - startTimeRef.current) / 1000)
+        setElapsed(accumulatedRef.current + additionalElapsed)
       }, 1000)
-    } else {
-      if (timerRef.current) clearInterval(timerRef.current)
     }
-
-    return () => {
-      if (timerRef.current) clearInterval(timerRef.current)
-    }
+    return () => clearInterval(interval)
   }, [isRunning])
 
   const formatTime = (seconds: number) => {
@@ -60,19 +56,25 @@ export function StudyTimer() {
   }
 
   const handleStartResume = () => {
+    const now = Date.now()
+    startTimeRef.current = now
+    accumulatedRef.current = elapsed
     setIsRunning(true)
     localStorage.setItem('winterArcTimerState', JSON.stringify({
       isRunning: true,
       elapsed: elapsed,
-      lastTick: Date.now()
+      lastTick: now
     }))
   }
 
   const handlePause = () => {
     setIsRunning(false)
+    const finalElapsed = accumulatedRef.current + Math.floor((Date.now() - startTimeRef.current) / 1000)
+    setElapsed(finalElapsed)
+    accumulatedRef.current = finalElapsed
     localStorage.setItem('winterArcTimerState', JSON.stringify({
       isRunning: false,
-      elapsed: elapsed,
+      elapsed: finalElapsed,
       lastTick: Date.now()
     }))
   }
@@ -80,16 +82,21 @@ export function StudyTimer() {
   const handleReset = () => {
     setIsRunning(false)
     setElapsed(0)
+    accumulatedRef.current = 0
     localStorage.removeItem('winterArcTimerState')
   }
 
   const handleStopSave = () => {
     setIsRunning(false)
+    let finalElapsed = elapsed
+    if (isRunning) {
+      finalElapsed = accumulatedRef.current + Math.floor((Date.now() - startTimeRef.current) / 1000)
+    }
     // For now we just reset it, we can display a success message or save to DB if needed
     // The requirement says "Stop and save session, if session recording is supported by the current architecture."
-    // We can just keep it local for now as per minimal change.
-    alert(`Session completed: ${formatTime(elapsed)}`)
+    alert(`Session completed: ${formatTime(finalElapsed)}`)
     setElapsed(0)
+    accumulatedRef.current = 0
     localStorage.removeItem('winterArcTimerState')
   }
 
